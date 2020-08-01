@@ -4,19 +4,22 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-sessions')
-//var expressejsLayout = require('express-ejs-layouts')
+var expressejsLayout = require('express-ejs-layouts')
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+//var usersRouter = require('./routes/users');
 require('dotenv').config()
-//var mongoose = require('mongoose')
 var app = express();
 require('./db/db')
-// const User = require('./models/User')
 const Item = require('./models/Item')
-// const Order = require('./models/Order')
+const User = require('./models/user')
+const Order = require('./models/Order')
+
+
+
+
 
 // view engine setup
-//app.use(expressejsLayout)
+app.use(expressejsLayout)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -26,8 +29,103 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
+
+var	passport = require("passport") 
+const	LocalStrategy = require("passport-local")
+app.use(require('express-session')({ 
+	secret: "Rusty is a dog", 
+	resave: false, 
+	saveUninitialized: false
+})); 
+
+app.use(passport.initialize()); 
+app.use(passport.session()); 
+
+passport.use(new LocalStrategy(User.authenticate())); 
+passport.serializeUser(User.serializeUser()); 
+passport.deserializeUser(User.deserializeUser()); 
+
+
+
+
+
+
+
+//===================== 
+// ROUTES 
+//===================== 
+
+// Showing home page 
+app.get("/", async (req, res)=> { 
+  var items = await Item.find()
+  console.log(typeof(items))
+	res.render("index",{'items':items}); 
+}); 
+app.get("/contact", function (req, res) { 
+	res.render("contact"); 
+}); 
+app.get("/cart", function (req, res) { 
+	res.render("cart");
+}); 
+// Showing secret page 
+app.get("/secret", isLoggedIn, function (req, res) { 
+	res.render("secret"); 
+}); 
+
+// Showing register form 
+app.get("/account/register", function (req, res) { 
+	res.render("register"); 
+}); 
+
+// Handling user signup 
+app.post("/account/register", function (req, res) { 
+	var username = req.body.username 
+	var password = req.body.password 
+	User.register(new User({ username: username }), 
+			password, function (err, user) { 
+		if (err) { 
+			console.log(err); 
+			return res.render("register"); 
+		} 
+
+		passport.authenticate("local")( 
+			req, res, function () { 
+			res.render("secret"); 
+		}); 
+	}); 
+}); 
+
+//Showing login form 
+app.get("/account/login", function (req, res) { 
+	res.render("login"); 
+}); 
+
+//Handling user login 
+app.post("/account/login", passport.authenticate("local", { 
+	successRedirect: "/secret", 
+	failureRedirect: "/login"
+}), function (req, res) { 
+}); 
+
+//Handling user logout 
+app.get("/logout", function (req, res) { 
+	req.logout(); 
+	res.redirect("/"); 
+}); 
+
+function isLoggedIn(req, res, next) { 
+	if (req.isAuthenticated()) return next(); 
+	res.redirect("/login"); 
+} 
+
+
+
+
+
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -46,3 +144,4 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+ 
