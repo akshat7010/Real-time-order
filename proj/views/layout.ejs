@@ -48,8 +48,11 @@
                             <li><a href="/contact">contact</a></li>
                             <li><a href="#">Account</a>
                                 <ul class="sub-menu mr-3">
+                                  <% if (user) { %>
+                                        <li><a href="/logout">Logout</a></li>
+                                    <% } else { %>
                                     <li><a href="/account/login">Login</a></li>
-                                    <li><a href="/account/register">Signup</a></li>
+                                    <% } %>
                                 </ul>
                             </li>
                             <li class="cart-icon">
