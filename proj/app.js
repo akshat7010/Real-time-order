@@ -48,8 +48,10 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 
-
-
+app.get('*',function (req, res, next) {
+  res.locals.user = req.user || null;
+  next();
+});
 
 
 
@@ -60,7 +62,6 @@ passport.deserializeUser(User.deserializeUser());
 // Showing home page 
 app.get("/", async (req, res)=> { 
   var items = await Item.find()
-  console.log(typeof(items))
 	res.render("index",{'items':items}); 
 }); 
 app.get("/contact", function (req, res) { 
@@ -105,7 +106,7 @@ app.get("/account/login", function (req, res) {
 //Handling user login 
 app.post("/account/login", passport.authenticate("local", { 
 	successRedirect: "/secret", 
-	failureRedirect: "/login"
+	failureRedirect: "/account/login"
 }), function (req, res) { 
 }); 
 
@@ -116,10 +117,10 @@ app.get("/logout", function (req, res) {
 }); 
 
 function isLoggedIn(req, res, next) { 
-	if (req.isAuthenticated()) return next(); 
+	if (req.isAuthenticated())
+		req.isLogged = true; return next();
 	res.redirect("/login"); 
 } 
-
 
 
 
@@ -142,6 +143,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+app.listen(3000);
 
 module.exports = app;
  

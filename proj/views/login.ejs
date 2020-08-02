@@ -1,9 +1,49 @@
-<h1>login</h1> 
 
-<form action="/account/login" method="POST"> 
-	<input type="text" name="username"
-		placeholder="username"> 
-	<input type="password" name="password"
-		placeholder="password"> 
-	<button>login</button> 
-</form> 
+<body style="margin: 0;padding: 0;">
+    <form action="/account/login" method="POST" style="width: 300px;margin: 0 auto;">
+        <a href="/">
+            <img class="mb-4" src="https://img.icons8.com/bubbles/2x/car.png" alt="" width="72" height="72"></a>
+        <h1 style="color : #FFAE42;text-align : center;">Sign in</h1><br>
+        <input type="text" name="username" placeholder="Username" class="un"> 
+		<input type="password" name="password" placeholder="Password" class="un"> 
+        <br><br>
+        <button class="submit" type="submit">Login</button>
+    </form>
+    <br><br>
+  </body>
+  <style>
+  .un{
+  width: 76%;
+    color: rgb(38, 50, 56);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    background: rgba(136, 126, 126, 0.04);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    box-sizing: border-box;
+    border: 2px solid rgba(0, 0, 0, 0.02);
+    margin-bottom: 50px;
+    margin-left: 46px;
+    text-align: center;
+    margin-bottom: 27px;
+    font-family: 'Ubuntu', sans-serif;
+  }
+  .submit {
+      cursor: pointer;
+        border-radius: 5em;
+        color: #000;
+        background: #FFAE42;
+        border: 0;
+        padding-left: 40px;
+        padding-right: 40px;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        font-family: 'Ubuntu', sans-serif;
+        margin-left: 35%;
+        font-size: 13px;
+        box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.04);
+    }
+  </style>
