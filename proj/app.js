@@ -84,8 +84,15 @@ app.get("/contact", function (req, res) {
 }); 
 
 // Showing secret page 
-app.get("/secret", isLoggedIn, function (req, res) { 
-	res.render("secret"); 
+app.get("/secret", isLoggedIn, async(req, res)=> { 
+	var orders = await Order.find();
+	var items = await Item.find();
+	orders.sort(function(a,b){
+    if(a._id > b._id) return -1;
+    if(a._id < b._id) return 1;
+    return 0;
+});
+	res.render("secret",{'orders':orders,'items':items}); 
 }); 
 
 // Showing register form 

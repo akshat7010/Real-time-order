@@ -45,8 +45,10 @@
                     </div>  
                     <div class="main-menu">
                         <ul>
+                            <% if (!user) { %>
                             <li class="active"><a href="/">home</a></li>
                             <li><a href="/contact">contact</a></li>
+                            <% } %>
                             <li><a href="#">Account</a>
                                 <ul class="sub-menu mr-3">
                                   <% if (user!=null ) { %>
@@ -56,9 +58,11 @@
                                     <% } %>
                                 </ul>
                             </li>
+                            <% if (!user) { %>
                             <li class="cart-icon">
                                   <a href="/cart" ><i class="fa  fa-cart-plus pr-2"  aria-hidden="true" ></i><span id="cart_total"><%= session.cart &&session.cart.totalQty ? session.cart.totalQty:"" %></span> </a>
                             </li>
+                            <% } %>
                         </ul>      
                     </div>
                     
