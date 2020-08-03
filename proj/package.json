@@ -9,12 +9,14 @@
   "dependencies": {
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
+    "connect-mongo": "^3.2.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "express-ejs-layouts": "^2.5.0",
+    "express-flash": "git://github.com/RGBboy/express-flash.git",
     "express-session": "^1.17.1",
     "express-sessions": "^1.0.6",
     "helmet": "^3.23.3",
@@ -23,6 +25,7 @@
     "mongoose": "^5.9.26",
     "morgan": "~1.9.1",
     "nodemon": "^2.0.4",
+    "noty": "^3.2.0-beta",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^6.0.1"

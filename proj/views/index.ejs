@@ -63,7 +63,7 @@
                                 <div class="order d-flex flex-row align-items-center justify-content-between">
                                     <div class="price"><span class="style-change"><%= item.price %></span>Rs/-</span></div>
                                     <div>
-                                        <button class="d-flex flex-row align-items-center justify-content-between add-button"><i class="fa fa-plus pr-2" aria-hidden="true"></i>  Add</button>
+                                        <button class="d-flex flex-row align-items-center justify-content-between add-button" id="cart_add" data-item = "<%= JSON.stringify(item) %>"><i class="fa fa-plus pr-2" aria-hidden="true"></i>  Add</button>
                                     </div>
                                 </div>
                             </div>

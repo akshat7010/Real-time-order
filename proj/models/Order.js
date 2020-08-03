@@ -16,6 +16,10 @@ const OrderSchema = mongoose.Schema({
    totalPrice : {
        type : Number ,
        default : 0 
+   },
+   totalQty:{
+       type:Number ,
+       default : 0 
    }
 },{
     timestamps:true

@@ -3,16 +3,19 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var session = require('express-sessions')
 var expressejsLayout = require('express-ejs-layouts')
-var indexRouter = require('./routes/index');
+var flash = require('express-flash')
 //var usersRouter = require('./routes/users');
 require('dotenv').config()
 var app = express();
-require('./db/db')
+const db=require('./db/db')
 const Item = require('./models/Item')
 const User = require('./models/user')
 const Order = require('./models/Order')
+var session = require('express-session')
+var	passport = require("passport") 
+const LocalStrategy = require("passport-local");
+const MongoStore= require('connect-mongo')(session);
 
 
 
@@ -28,16 +31,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash())
 
 
+//session-store
+const mongostore =new MongoStore({
+	mongooseConnection: db ,
+	collection : "session"
 
-
-var	passport = require("passport") 
-const	LocalStrategy = require("passport-local")
-app.use(require('express-session')({ 
+})
+app.use(session({ 
 	secret: "Rusty is a dog", 
 	resave: false, 
-	saveUninitialized: false
+	saveUninitialized: false,
+	cookie:{maxAge:1000*24*60*60*2},
+	//cookie:{maxAge:1000},
+
+	store:mongostore
 })); 
 
 app.use(passport.initialize()); 
@@ -48,11 +58,6 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser()); 
 
 
-app.get('*',function (req, res, next) {
-  res.locals.user = req.user || null;
-  next();
-});
-
 
 
 //===================== 
@@ -60,6 +65,16 @@ app.get('*',function (req, res, next) {
 //===================== 
 
 // Showing home page 
+
+app.use((req,res,next)=>{
+	try{
+	res.locals.session = req.session ;
+	res.locals.user = req.user || null;
+	next()
+	}catch{
+		res.send("Error")
+	}
+})
 app.get("/", async (req, res)=> { 
   var items = await Item.find()
 	res.render("index",{'items':items}); 
@@ -67,9 +82,7 @@ app.get("/", async (req, res)=> {
 app.get("/contact", function (req, res) { 
 	res.render("contact"); 
 }); 
-app.get("/cart", function (req, res) { 
-	res.render("cart");
-}); 
+
 // Showing secret page 
 app.get("/secret", isLoggedIn, function (req, res) { 
 	res.render("secret"); 
@@ -116,6 +129,80 @@ app.get("/logout", function (req, res) {
 	res.redirect("/"); 
 }); 
 
+
+//cart 
+
+app.get("/cart", function (req, res) { 
+	res.render("cart");
+}); 
+
+app.post("/add_to_cart",(req,res)=>{
+	
+	const item = req.body ;
+	console.log(item)
+	if(!req.session.cart){
+		req.session.cart ={
+			items :{},
+			totalQty : 0 ,
+			totalPrice :0 
+		}
+	}
+	let cart = req.session.cart ;
+	if(!cart.items[item._id]){
+        cart.items[item._id]={
+			item : item ,
+			qty : 1
+		}
+		cart.totalQty+=1 ;
+		cart.totalPrice += item.price ;
+		
+	}else{
+		cart.items[item._id].qty+=1 ;
+		cart.totalQty+=1 ;
+		cart.totalPrice += item.price ;
+	}
+
+	req.session.cart = cart ;
+	console.log(cart)
+	res.send({
+		"total" :cart.totalQty
+	})
+})
+
+app.post('/order',async (req,res)=>{
+	const cart = req.session.cart ;
+
+	const {name }= req.body ;
+	if(!name){
+		req.flash('error',"Name is required")
+		res.redirect('/cart')
+	}
+	const order = await new Order({
+		items :[],
+		name :name ,
+		totalPrice :cart.totalPrice,
+		totalQty : cart.totalQty
+
+	})
+
+	for(let item of Object.values(cart.items)){
+		order.items.push({
+			item : item.item._id,
+			qty:item.qty
+		})
+	}
+	req.session.cart ={
+		items:{},
+		totalQty : 0 ,
+		totalPrice :0 
+
+	}
+	order.save()
+	req.flash('info',"Order placed")
+	res.redirect('/cart')
+	
+})
+
 function isLoggedIn(req, res, next) { 
 	if (req.isAuthenticated())
 		req.isLogged = true; return next();
@@ -125,7 +212,6 @@ function isLoggedIn(req, res, next) {
 
 
 
-app.use('/', indexRouter);
 
 
 // catch 404 and forward to error handler
@@ -145,7 +231,7 @@ app.use(function(err, req, res, next) {
 });
 
 
-app.listen(3000);
+
 
 module.exports = app;
  

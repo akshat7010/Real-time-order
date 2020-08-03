@@ -13,6 +13,7 @@
     <link rel="shortcut icon" href="/images/logo/favicon.png" type="image/x-icon">
 
     <!-- CSS Files -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css" integrity="sha512-0p3K0H3S6Q4bEWZ/WmC94Tgit2ular2/n0ESdfEX8l172YyQj8re1Wu9s/HT9T/T2osUw5Gx/6pAZNk3UKbESw==" crossorigin="anonymous" />
     <link rel="stylesheet" href="/css/animate-3.7.0.css">
     <link rel="stylesheet" href="/css/font-awesome-4.7.0.min.css">
     <link rel="stylesheet" href="/css/bootstrap-4.1.3.min.css">
@@ -48,7 +49,7 @@
                             <li><a href="/contact">contact</a></li>
                             <li><a href="#">Account</a>
                                 <ul class="sub-menu mr-3">
-                                  <% if (user) { %>
+                                  <% if (user!=null ) { %>
                                         <li><a href="/logout">Logout</a></li>
                                     <% } else { %>
                                     <li><a href="/account/login">Login</a></li>
@@ -56,7 +57,7 @@
                                 </ul>
                             </li>
                             <li class="cart-icon">
-                                  <a href="/cart"><i class="fa  fa-cart-plus" aria-hidden="true"></i></a>
+                                  <a href="/cart" ><i class="fa  fa-cart-plus pr-2"  aria-hidden="true" ></i><span id="cart_total"><%= session.cart &&session.cart.totalQty ? session.cart.totalQty:"" %></span> </a>
                             </li>
                         </ul>      
                     </div>
@@ -149,12 +150,16 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 
 
     <!-- Javascript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js" integrity="sha512-lOrm9FgT1LKOJRUXF3tp6QaMorJftUjowOWiDcG5GFZ/q7ukof19V0HKx/GWzXCdt9zYju3/KhBNdCLzK8b90Q==" crossorigin="anonymous"></script>
     <script src="/js/vendor/jquery-2.2.4.min.js"></script>
-	  <script src="/js/vendor/bootstrap-4.1.3.min.js"></script>
+	<script src="/js/vendor/bootstrap-4.1.3.min.js"></script>
     <script src="/js/vendor/wow.min.js"></script>
     <script src="/js/vendor/owl-carousel.min.js"></script>
     <script src="/js/vendor/jquery.datetimepicker.full.min.js"></script>
     <script src="/js/vendor/jquery.nice-select.min.js"></script>
     <script src="/js/main.js"></script>
+    
+    <script  src="/js/bundle.js"></script>
+    
 </body>
 </html>
