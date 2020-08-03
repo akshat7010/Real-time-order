@@ -44,8 +44,10 @@
                     </div>  
                     <div class="main-menu">
                         <ul>
+                            <% if (!user) { %>
                             <li class="active"><a href="/">home</a></li>
                             <li><a href="/contact">contact</a></li>
+                            <% } %>
                             <li><a href="#">Account</a>
                                 <ul class="sub-menu mr-3">
                                   <% if (user) { %>
@@ -55,9 +57,11 @@
                                     <% } %>
                                 </ul>
                             </li>
+                            <% if (!user) { %>
                             <li class="cart-icon">
                                   <a href="/cart"><i class="fa  fa-cart-plus" aria-hidden="true"></i></a>
                             </li>
+                            <% } %>
                         </ul>      
                     </div>
                     
