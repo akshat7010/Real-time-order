@@ -52,7 +52,7 @@
                     <div class="col-md-3 col-sm-6">
                         <div class="single-food  mb-md-5 mb-sm-2 mb-2">
                             <div class="food-img">
-                                <img src="/images/<%= item.pic %>" class="img-fluid" alt="">
+                                <img src="/uploads/<%= item.pic %>" class="img-fluid" alt="">
                             </div>
                             <div class="food-content">
                                 <div class="d-flex justify-content-between">
@@ -62,9 +62,11 @@
                                 <p class="pt-2"><%= item.Info %></p>
                                 <div class="order d-flex flex-row align-items-center justify-content-between">
                                     <div class="price"><span class="style-change"><%= item.price %></span>Rs/-</span></div>
+                                    <% if(!user) { %>
                                     <div>
                                         <button class="d-flex flex-row align-items-center justify-content-between add-button" id="cart_add" data-item = "<%= JSON.stringify(item) %>"><i class="fa fa-plus pr-2" aria-hidden="true"></i>  Add</button>
                                     </div>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>

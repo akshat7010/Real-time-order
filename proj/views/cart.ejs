@@ -25,7 +25,7 @@
             <div clas="item-list text-center">
                 <% for(let item of Object.values(session.cart.items)) { %>
                 <div class="d-flex align-items-center flex-row mt-5">
-                    <img  class="cart-img" src="/images/<%= item.item.pic %>" alt="food">
+                    <img  class="cart-img" src="/uploads/<%= item.item.pic %>" alt="food">
                     <div class="ml-md-4 ml-1 ml-sm-2">
                         <p class="cart-order"><%= item.item.name %></p>
                     </div>

@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var expressejsLayout = require('express-ejs-layouts')
 var flash = require('express-flash')
-//var usersRouter = require('./routes/users');
+const multer = require('multer')
 require('dotenv').config()
 var app = express();
 const db=require('./db/db')
@@ -21,17 +21,21 @@ const MongoStore= require('connect-mongo')(session);
 
 
 
+
 // view engine setup
 app.use(expressejsLayout)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({limit:'5mb'}));
+app.use(express.urlencoded({ extended: true}));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash())
+
+
 
 
 //session-store
@@ -57,14 +61,27 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser()); 
 passport.deserializeUser(User.deserializeUser()); 
 
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname,'public/uploads/'))
+    },
+    filename: function (req, file, cb) {
+		var datestr= new Date(Date.now())
 
+        cb(null, file.originalname+'-'+datestr.getDate()+'-'+datestr.getMonth()+'-'+datestr.getFullYear()+'-'+datestr.getHours()+'-'+datestr.getMinutes()+'.jpg')
+  }
+})
+var upload = multer({ storage: storage })
 
 
 //===================== 
 // ROUTES 
 //===================== 
 
-// Showing home page 
+
+
+
+
 
 app.use((req,res,next)=>{
 	try{
@@ -75,6 +92,11 @@ app.use((req,res,next)=>{
 		res.send("Error")
 	}
 })
+
+
+
+
+
 app.get("/", async (req, res)=> { 
   var items = await Item.find()
 	res.render("index",{'items':items}); 
@@ -83,8 +105,13 @@ app.get("/contact", function (req, res) {
 	res.render("contact"); 
 }); 
 
+
+
+
+
 // Showing secret page 
 app.get("/secret", isLoggedIn, async(req, res)=> { 
+	if(!req.user)res.redirect('/account/login')
 	var orders = await Order.find();
 	var items = await Item.find();
 	orders.sort(function(a,b){
@@ -95,10 +122,17 @@ app.get("/secret", isLoggedIn, async(req, res)=> {
 	res.render("secret",{'orders':orders,'items':items}); 
 }); 
 
+
+
+
 // Showing register form 
 app.get("/account/register", function (req, res) { 
 	res.render("register"); 
 }); 
+
+
+
+
 
 // Handling user signup 
 app.post("/account/register", function (req, res) { 
@@ -118,10 +152,15 @@ app.post("/account/register", function (req, res) {
 	}); 
 }); 
 
+
+
+
 //Showing login form 
 app.get("/account/login", function (req, res) { 
 	res.render("login"); 
 }); 
+
+
 
 //Handling user login 
 app.post("/account/login", passport.authenticate("local", { 
@@ -129,6 +168,8 @@ app.post("/account/login", passport.authenticate("local", {
 	failureRedirect: "/account/login"
 }), function (req, res) { 
 }); 
+
+
 
 //Handling user logout 
 app.get("/logout", function (req, res) { 
@@ -143,6 +184,10 @@ app.get("/cart", function (req, res) {
 	res.render("cart");
 }); 
 
+
+
+
+//adding to cart
 app.post("/add_to_cart",(req,res)=>{
 	
 	const item = req.body ;
@@ -175,6 +220,11 @@ app.post("/add_to_cart",(req,res)=>{
 		"total" :cart.totalQty
 	})
 })
+
+
+
+
+//place order
 
 app.post('/order',async (req,res)=>{
 	const cart = req.session.cart ;
@@ -210,10 +260,43 @@ app.post('/order',async (req,res)=>{
 	
 })
 
+
+
+//add new item to menu
+
+app.post('/add_item',upload.single('pic'),async (req,res)=>{
+	try{
+		if(!req.user)res.redirect('/account/login')
+	
+	var {name,price}= req.body ;
+    if(await Item.findOne({name:name})){
+		req.flash("error","Item Already exists")
+	}else{
+		var item = await new Item({name:name,price:price})
+		if(req.body.info) item.Info=req.body.info ;
+		if(req.file.originalname){
+			var datestr= new Date(Date.now())
+			item.pic = req.file.originalname+'-'+datestr.getDate()+'-'+datestr.getMonth()+'-'+datestr.getFullYear()+'-'+datestr.getHours()+'-'+datestr.getMinutes()+'.jpg' ;}
+		await item.save()
+		req.flash("item","Item created")
+	}
+	
+	res.redirect("/secret")
+}catch{
+	req.flash("Item_error","Item can_not be created check  the file size")
+	res.redirect("/secret")
+}
+})
+
+
+
+
+
 function isLoggedIn(req, res, next) { 
-	if (req.isAuthenticated())
+	if (req.user)
 		req.isLogged = true; return next();
-	res.redirect("/login"); 
+	
+	res.redirect("/account/login"); 
 } 
 
 
@@ -236,6 +319,13 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+//===================== 
+// ROUTES 
+//===================== 
+
+
 
 
 

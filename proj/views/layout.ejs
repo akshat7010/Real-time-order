@@ -49,8 +49,14 @@
                             <li class="active"><a href="/">home</a></li>
                             <li><a href="/contact">contact</a></li>
                             <% } %>
+                            <% if(user) { %>
+                            <li><button type="button" class="d-inline flex-row align-items-center justify-content-between add-button" data-toggle="modal" data-target="#add_item"><i class="fa fa-plus pr-2" aria-hidden="true"></i>
+                                Add Item
+                            </button></li>
+                            <% } %>
                             <li><a href="#">Account</a>
                                 <ul class="sub-menu mr-3">
+                                   
                                   <% if (user!=null ) { %>
                                         <li><a href="/logout">Logout</a></li>
                                     <% } else { %>
@@ -58,6 +64,9 @@
                                     <% } %>
                                 </ul>
                             </li>
+                            <!-- Button trigger modal -->
+                            
+  
                             <% if (!user) { %>
                             <li class="cart-icon">
                                   <a href="/cart" ><i class="fa  fa-cart-plus pr-2"  aria-hidden="true" ></i><span id="cart_total"><%= session.cart &&session.cart.totalQty ? session.cart.totalQty:"" %></span> </a>
@@ -150,7 +159,60 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
             </div>
         </div>
     </footer>
+
     <!-- Footer Area End -->
+                <!-- Modal -->
+            <div class="modal fade" id="add_item" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                            <div class="modal-header">
+                                    <h5 class="modal-title">Add item to menu</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                </div>
+                        <form action="/add_item" method="POST" enctype="multipart/form-data" class="add_form" >
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <div class="form-group">
+                                        <label for="name">Name</label>
+                                        <input type="text"
+                                        class="form-control" name="name" id="" aria-describedby="helpId" placeholder="Name of item" required>
+                                        <small id="helpId" class="form-text text-muted"></small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="info">Info</label>
+                                        <textarea class="form-control" name="info" id="" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="price">Price</label>
+                                        <input type="number"
+                                        class="form-control" name="price" id="" aria-describedby="helpId" placeholder="price" required>
+                                        <small id="helpId" class="form-text text-muted">Enter price in rs/-</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="pic">Pic</label>
+                                        <input type="file" class="form-control-file" name="pic" id="" placeholder="" size="1000" aria-describedby="fileHelpId">
+                                        <small id="fileHelpId" class="form-text text-muted">Please add a pic</small>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                        <style>
+                            
+                        </style>
+                    </div>
+                </div>
+            </div>
+
 
 
     <!-- Javascript -->
@@ -164,6 +226,28 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     <script src="/js/main.js"></script>
     
     <script  src="/js/bundle.js"></script>
+    <script>
+        $('#add_item').on('show.bs.modal', event => {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+           
+            
+        });
+        // let form = document.getElementsByClassName("add_form")
+        // form.addEventListener('submit', function(event) {
+        //     if (form.checkValidity() === false) {
+        //       event.preventDefault();
+        //       event.stopPropagation();
+        //     }
+        //     form.classList.add('was-validated');
+        //   }, false);
+    </script>
+    
     
 </body>
 </html>
+
+
+
+
+
