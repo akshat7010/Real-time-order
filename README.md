@@ -29,7 +29,7 @@ This project was built using
 - axios 
 - passport
 - express-sessions and express-flash
-- cookie-parser
+- cookie-parser<br>
 For database management mongo-atlas was used
    
 
