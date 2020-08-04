@@ -17,7 +17,7 @@ var	passport = require("passport")
 const LocalStrategy = require("passport-local");
 const MongoStore= require('connect-mongo')(session);
 
-
+var objectId=require('mongodb').ObjectId;
 
 
 
@@ -112,7 +112,7 @@ app.get("/contact", function (req, res) {
 // Showing secret page 
 app.get("/secret", isLoggedIn, async(req, res)=> { 
 	if(!req.user)res.redirect('/account/login')
-	var orders = await Order.find();
+	var orders = await Order.find({isCompleted:0});
 	var items = await Item.find();
 	orders.sort(function(a,b){
     if(a._id > b._id) return -1;
@@ -238,8 +238,8 @@ app.post('/order',async (req,res)=>{
 		items :[],
 		name :name ,
 		totalPrice :cart.totalPrice,
-		totalQty : cart.totalQty
-
+		totalQty : cart.totalQty,
+		isCompleted : 0
 	})
 
 	for(let item of Object.values(cart.items)){
@@ -290,6 +290,14 @@ app.post('/add_item',upload.single('pic'),async (req,res)=>{
 
 
 
+//complete the order
+app.post('/complete',async (req,res)=>{
+	if(!req.user)res.redirect('/account/login')
+	let orderId = req.query.orderId; 
+	console.log(orderId);
+	db.collection('orders').updateOne({"_id" : objectId(orderId)},{ $set: { "isCompleted": 1} })
+	res.redirect('/secret')
+});
 
 
 function isLoggedIn(req, res, next) { 
@@ -328,7 +336,7 @@ app.use(function(err, req, res, next) {
 
 
 
-
+app.listen(3000);
 
 module.exports = app;
  

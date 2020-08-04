@@ -4,6 +4,9 @@ const OrderSchema = mongoose.Schema({
   name : {type:String,
       required:true
   },
+  isCompleted: {type:Number,
+      required:true
+  },
    items : [{
        item :{
        type :mongoose.Schema.Types.ObjectId,
